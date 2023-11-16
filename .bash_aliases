@@ -517,6 +517,21 @@ function framework_run() {
   fi
 }
 
+function __() {
+  local lang
+  lang=$(echo "$(locale | grep LANG=)" | sed 's/LANG=//; s/.UTF-8//')
+
+  if [ -n "${trad[*]}" ] && [ "${trad["$1-$lang"]}" != "" ]; then
+    echo "${trad["$1-$lang"]}"
+  else
+    echo "$1"
+  fi
+}
+
+function timestamp() {
+    date +%s
+}
+
 function framework() {
   eval "$(framework_flag)"
 
