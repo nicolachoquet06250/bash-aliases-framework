@@ -596,6 +596,13 @@ function framework() {
       "  2. framework_command_checker [--with-help]"
       "  3. framework_run_command [--error default=\"\"command \\\"alwaysdata \${chosen_command}\\\" not found\"\"]"
       ""
+      "__ \"message\""
+      "➡️  Récupère la valeur associée à la cle de traduction \"message\""
+      "et à la langue du systeme définie dans un tableau \"lang\" dans une fonction appelante."
+      ""
+      "timestamp"
+      "➡️  Donne la date courrente sous forme de timestamp"
+      ""
       "framework tools:sites:list"
       "⬆️  framework tools:s:l"
     )
