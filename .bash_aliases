@@ -598,7 +598,7 @@ function framework() {
       ""
       "__ \"message\""
       "➡️  Récupère la valeur associée à la cle de traduction \"message\""
-      "et à la langue du systeme définie dans un tableau \"lang\" dans une fonction appelante."
+      "et à la langue du systeme définie dans un tableau \"trad\" dans une fonction appelante."
       ""
       "timestamp"
       "➡️  Donne la date courrente sous forme de timestamp"
