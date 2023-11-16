@@ -11,14 +11,11 @@ fi
 file_path=".bash-aliases-framework/.bash_aliases"
 
 source_1="source \"\${HOME}/${file_path}\""
-source_2="source \"~/${file_path}\""
 
 bash_aliases_path="${HOME}/.bash_aliases"
-bash_aliases_content="$(cat "${bash_aliases_path}")"
 
-if {
-  [[ ! "${bash_aliases_content}" =~ $source_1 ]] &&
-  [[ ! "${bash_aliases_content}" =~ $source_2 ]]
-};then
-  echo "source \"\${HOME}/${file_path}\"" >> "${bash_aliases_path}"
-fi
+file_content="$(cat "${bash_aliases_path}")"
+IFS=$'\n'
+read -rd '' -a lines <<<"${file_content}"
+
+[[ "${lines[*]}" != *"$source_1"* ]] && echo "source \"\${HOME}/${file_path}\"" >> "${bash_aliases_path}" || echo "" >> /dev/null
