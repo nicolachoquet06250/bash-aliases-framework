@@ -236,7 +236,7 @@ function framework_run_command {
       }
       $size=$args.Count
 
-      & $command $args[$start..$size]
+      Invoke-Expression $command $args[$start..$size]
     } else {
     '
     If ($error -eq $false) {
@@ -256,7 +256,7 @@ function function_generate_shorts_commands {
     return '
     foreach ($alias in $shorts.Keys) {
       Invoke-Expression "function ${alias} {
-        & ${shorts.$alias} \$args
+        Invoke-Expression ${shorts.$alias} \$args
       }"
     }
     '
@@ -436,7 +436,7 @@ function framework_title {
         }
 
         If ($line_prefix -eq $false) {
-            & $command
+            Invoke-Expression $command
         } else {
             out = $("${command}")
             $lines = $out.Split("\n")
