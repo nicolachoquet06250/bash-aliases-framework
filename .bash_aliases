@@ -215,6 +215,46 @@ function framework_command_checker() {
       fi
     done
     "
+    except_logo_flag="$(flag "except-logo" "el")"
+    if [[ "${except_logo_flag}" != false ]] && [[ "${except_logo_flag}" != true ]];then
+      echo "
+      if {
+        [[ ! \"\$(type -t logo)\" =~ \"non trouvé\" ]] &&
+        [[ ! \"\$(type -t logo)\" =~ \"not found\" ]]
+      };then
+        except_logo=\"${except_logo_flag}\"
+        IFS=\$','
+        read -rd '' -a excepts <<<\"\$except_logo\"
+
+        passed=true
+        for except in \"\${excepts[@]}\";do
+          except=\"\${except//:/_}\"
+          except=\"\${except:0:\$((\${#except} - 1))}\"
+          except_short=\"\"
+
+          for short in \"\${!shorts[@]}\";do
+            if [[ \"\${shorts[\$short]}\" == \"\${except}\" ]];then
+              except_short=\"\${short}\"
+            fi
+          done
+
+          if {
+            {
+              [[ \"\${except_short}\" == \"\" ]] &&
+              [[ \"\${chosen_command//:/_}\" == \"\${except}\" ]]
+            } || {
+              [[ \"\${chosen_command//:/_}\" == \"\${except}\" ]] ||
+              [[ \"\${chosen_command//:/_}\" == \"\${except_short}\" ]]
+            }
+          };then
+            passed=false
+          fi
+        done
+
+        [[ \$passed == true ]] && logo
+      fi
+      "
+    fi
 }
 
 function framework_run_command() {
@@ -225,8 +265,8 @@ function framework_run_command() {
   command=\${chosen_command//':'/'_'}
   if [[ \"\${command_exists}\" == \"1\" ]] && [[ \$(type -t \$command) == function ]];then
     [[ \"\${start}\" == \"\" ]] && start=2
-    local size=+\"\${#*}\"
-    local args=(\"\${@:\$start:\$size}\")
+    size=+\"\${#*}\"
+    args=(\"\${@:\$start:\$size}\")
 
     \$command \"\${args[@]}\"
   else"
@@ -238,7 +278,7 @@ function framework_run_command() {
   echo "
   fi
 
-  echo \"\"
+  [[ \"\${passed}\" == true ]] && echo \"\"
   "
 }
 
@@ -456,7 +496,7 @@ function framework_sub_command() {
   command_short="$(flag "short" "s")"
 
   echo "
-  if [[ \"\${commands[@]}\" == \"\" ]];then
+  if [[ \${#commands[@]} -eq 0 ]];then
     declare -a commands=()
   fi
 
@@ -465,11 +505,11 @@ function framework_sub_command() {
   if [[ "${command_short}" != false ]];then
     echo "  commands+=(\"${command_short}\")
 
-  if [[ \"\${shorts[@]}\" == \"\" ]];then
+  if [[ \${#shorts[@]} -eq 0 ]];then
     declare -A shorts=()
   fi
 
-  shorts['${command_short//:/_}']=\"${command//:/_}\"
+  shorts+=([${command_short//:/_}]=\"${command//:/_}\")
     "
   fi
 
@@ -495,23 +535,25 @@ function framework_run() {
   eval \"\$(framework_generate_shorts_commands)\"
   "
 
+  except_logo_flag="$(flag "except-logo" "el")"
   if [[ "$(flag "with-help" "wh")" == true ]];then
     echo "
-    eval \"\$(framework_command_checker --with-help)\"
+    eval \"\$(framework_command_checker --with-help --except-logo \"${except_logo_flag}\")\"
     "
   else
     echo "
-    eval \"\$(framework_command_checker)\"
+    eval \"\$(framework_command_checker --except-logo \"${except_logo_flag}\")\"
     "
   fi
 
-  if [[ "$(flag "error" "err")" != false ]];then
+  error="$(flag "error" "err")"
+  if [[ "${error}" != false ]];then
     echo "
-    eval \"\$(framework_run_command --error \"$(flag "error" "err")\")\"
+    eval \"\$(framework_run_command --error \"${error}\")\"
     "
   else
     echo "
-  #  Message d'erreur par default : \"command \\\"alwaysdata \${chosen_command}\\\" not found\"
+  #  Message d'erreur par default : \"command \\\"cmd \${chosen_command}\\\" not found\"
     eval \"\$(framework_run_command)\"
     "
   fi
