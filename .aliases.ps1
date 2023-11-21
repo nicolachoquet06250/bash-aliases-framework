@@ -546,8 +546,8 @@ function framework_run {
 function __ {
     $lang=$(echo "$(locale | grep LANG=)" | sed 's/LANG=//; s/.UTF-8//')
 
-    If (($trad -ne $null) -and (($trad["${args[1]}-${lang}"] -ne $null) -or ($trad["${args[1]}-${lang}"] -ne ""))) {
-        return $trad["${args[1]}-${lang}"]
+    If (($trad -ne $null) -and ($trad[$lang] -ne $null) -and ($trad[$lang][$args[1]] -ne $null) -and ($trad[$lang][$args[1]] -ne "")) {
+        return $trad[$lang][$args[1]]
     } else {
         return $args[1]
     }
