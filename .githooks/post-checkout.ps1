@@ -1,14 +1,10 @@
 If (-not (Test-Path "${HOME}/.bash-aliases-framework")) {
-    $path = ""
-    If ($args[1] -eq "install-script") {
+    If ($args[0] -eq "install-script") {
         $path = "/bash-aliases-framework"
+
+        Write-Output "${HOME}/.bash-aliases-framework"
+        Write-Output "$( Get-Location )${path}"
+
+        New-Item -ItemType SymbolicLink -Path "${HOME}/.bash-aliases-framework" -Target "$( Get-Location )${path}"
     }
-    New-Item -ItemType SymbolicLink -Path "$(Get-Location)$path" -Target "$HOME/.bash-aliases-framework"
-}
-
-$file_path = ".bash-aliases-framework/.aliases.ps1"
-$source = "source \"\${HOME}/$file_path\""
-
-If (-not (Select-String $profile -Pattern $source)) {
-    Set-Content -Path $profile -Value $source
 }
